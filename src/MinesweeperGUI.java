@@ -37,7 +37,29 @@ public class MinesweeperGUI extends GridPane {
         add(newGame, 24,0);
     }
     private void processClick(ActionEvent event1){
-        
+        int positionX = 0;
+        int positionY =0;
+        for (int x = 0; x < grid.length; x++) {
+            for (int y = 0; y < grid[x].length; y++) {
+                if (event1.equals(grid[x][y])){
+                    positionX = x;
+                    positionY = y;
+                }
+            }
+        }
+        if(bombs[positionX][positionY] == 1){
+            for (int x = 0; x < grid.length; x++) {
+                for (int y = 0; y < grid[x].length; y++) {
+                    if(bombs[x][y] == 1)
+                        grid[x][y].setText("Bomb");
+                    else
+                        grid[x][y].setText("    ");
+                }
+            }
+        }
+        else
+            if(minesweeper.checkBombs(positionX, positionY)==0)
+                grid[positionX][positionY].setText(minesweeper.checkBombs(positionX, positionY) + "");
     }
 
     private void processReset(ActionEvent event2){

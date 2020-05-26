@@ -17,4 +17,19 @@ public class Minesweeper {
         }
         return grid;
     }
+    public int checkBombs(int positionX, int positionY){
+        int count = 0;
+        for(int i = positionX -1; i<positionX+2; i++){
+            if(grid[i][positionY-1] == 1){
+                count++;
+            }
+            if(grid[i][positionY] == 1){
+                count++;
+            }
+            if(grid[i][positionY+1] == 1){
+                count++;
+            }
+        }
+        return count;
+    }
 }
