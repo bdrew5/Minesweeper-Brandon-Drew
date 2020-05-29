@@ -20,27 +20,38 @@ public class Minesweeper {
         }
     }
 
-    public void layMines() {
+    public void layMines(int mines) {
         for (int x = 0; x < grid.length; x++) {
             for (int y = 0; y < grid[x].length; y++) {
-                if (ran.nextInt(15) == 1 && count < 30) {
+                if (ran.nextInt(15) == 1 && count < mines) {
                     count++;
                     grid[x][y] = 1;
                 } else
                     grid[x][y] = 0;
             }
         }
-        if (count != 30) {
+        if (count != mines) {
             for (int x = 0; x < grid.length; x++) {
                 for (int y = 0; y < grid[x].length; y++) {
-                    if (ran.nextInt(15) == 1 && count < 30 && grid[x][y] != 1) {
+                    if (ran.nextInt(15) == 1 && count < mines && grid[x][y] != 1) {
                         count++;
                         grid[x][y] = 1;
                     }
                 }
             }
-        }
 
+        }
+        if (count != mines) {
+            for (int x = 0; x < grid.length; x++) {
+                for (int y = 0; y < grid[x].length; y++) {
+                    if (ran.nextInt(15) == 1 && count < mines && grid[x][y] != 1) {
+                        count++;
+                        grid[x][y] = 1;
+                    }
+                }
+            }
+
+        }
     }
 
     public int[][] getGrid() {
@@ -136,7 +147,7 @@ public class Minesweeper {
             }
         } else if (positionX != grid.length - 1 && positionX != 0 && positionY == 0) {
             for (int i = positionX - 1; i < positionX + 2; i++) {
-                if (grid[i][positionY] == 1) {
+                if (grid[i][positionY+1] == 1) {
                     count++;
                 }
                 if (grid[i][positionY] == 1) {
@@ -161,13 +172,184 @@ public class Minesweeper {
                 section[x][y] = 10;
             }
         }
-        section[positionX][positionY] = 9;
-        for (int i = positionX - 1; i < positionX + 2; i++) {
-            section[i][positionY - 1] = all[i][positionY - 1];
-            section[i][positionY + 1] = all[i][positionY + 1];
-            if (i != positionX)
-                section[i][positionY] = checkBombs(i, positionY);
-        }
+        section[positionX][positionY] = 0;
+       for (int x = 0; x < section.length; x++) {
+           for (int y = 0; y <section[x].length ; y++) {
+               if (section[x][y] == 0) {
+                   if (x != 0 && x != grid.length - 1 && y != 0 && y != grid.length - 1) {
+                       for (int i = x - 1; i < x + 2; i++) {
+                           section[i][y - 1] = checkBombs(i, y - 1);
+                           section[i][y + 1] = checkBombs(i, y + 1);
+                           if (i != x)
+                               section[i][y] = checkBombs(i, y);
+                       }
+                   } else if (x == 0 && y != 0 && y != grid.length - 1) {
+                       for (int i = x; i < x + 2; i++) {
+                           section[i][y - 1] = checkBombs(i, y - 1);
+                           section[i][y + 1] = checkBombs(i, y + 1);
+                           if (i != x)
+                               section[i][y] = checkBombs(i, y);
+                       }
+                   } else if (x == 0 && y == 0) {
+                       for (int i = x; i < x + 2; i++) {
+                           section[i][y + 1] = checkBombs(i, y + 1);
+                           if (i != x)
+                               section[i][y] = checkBombs(i, y);
+                       }
+                   } else if (x == 0 && y == grid.length - 1) {
+                       for (int i = x; i < x + 2; i++) {
+                           section[i][y - 1] = checkBombs(i, y - 1);
+                           if (i != x)
+                               section[i][y] = checkBombs(i, y);
+                       }
+                   } else if (x == grid.length - 1 && y != 0 && y != grid.length - 1) {
+                       for (int i = x - 1; i < x + 1; i++) {
+                           section[i][y - 1] = checkBombs(i, y - 1);
+                           section[i][y + 1] = checkBombs(i, y + 1);
+                           if (i != x)
+                               section[i][y] = checkBombs(i, y);
+                       }
+                   } else if (x == grid.length - 1 && y == 0) {
+                       for (int i = x - 1; i < x + 1; i++) {
+                           section[i][y + 1] = checkBombs(i, y + 1);
+                           if (i != x)
+                               section[i][y] = checkBombs(i, y);
+                       }
+                   } else if (x != 0 && x != grid.length - 1 && y == 0) {
+                       for (int i = x - 1; i < x + 2; i++) {
+                           section[i][y + 1] = checkBombs(i, y + 1);
+                           if (i != x)
+                               section[i][y] = checkBombs(i, y);
+                       }
+                   } else {
+                       for (int i = x - 1; i < x + 1; i++) {
+                           section[i][y - 1] = checkBombs(i, y - 1);
+                           if (i != x)
+                               section[i][y] = checkBombs(i, y);
+                       }
+                   }
+                   section[x][y] = 9;
+               }
+           }
+       }
+       for (int x = section.length-1; x >= 0; x--) {
+           for (int y = section[x].length-1; y >= 0 ; y--) {
+               if (section[x][y] == 0) {
+                   if (x != 0 && x != grid.length - 1 && y != 0 && y != grid.length - 1) {
+                       for (int i = x - 1; i < x + 2; i++) {
+                           section[i][y - 1] = checkBombs(i, y - 1);
+                           section[i][y + 1] = checkBombs(i, y + 1);
+                           if (i != x)
+                               section[i][y] = checkBombs(i, y);
+                       }
+                   } else if (x == 0 && y != 0 && y != grid.length - 1) {
+                       for (int i = x; i < x + 2; i++) {
+                           section[i][y - 1] = checkBombs(i, y - 1);
+                           section[i][y + 1] = checkBombs(i, y + 1);
+                           if (i != x)
+                               section[i][y] = checkBombs(i, y);
+                       }
+                   } else if (x == 0 && y == 0) {
+                       for (int i = x; i < x + 2; i++) {
+                           section[i][y + 1] = checkBombs(i, y + 1);
+                           if (i != x)
+                               section[i][y] = checkBombs(i, y);
+                       }
+                   } else if (x == 0 && y == grid.length - 1) {
+                       for (int i = x; i < x + 2; i++) {
+                           section[i][y - 1] = checkBombs(i, y - 1);
+                           if (i != x)
+                               section[i][y] = checkBombs(i, y);
+                       }
+                   } else if (x == grid.length - 1 && y != 0 && y != grid.length - 1) {
+                       for (int i = x - 1; i < x + 1; i++) {
+                           section[i][y - 1] = checkBombs(i, y - 1);
+                           section[i][y + 1] = checkBombs(i, y + 1);
+                           if (i != x)
+                               section[i][y] = checkBombs(i, y);
+                       }
+                   } else if (x == grid.length - 1 && y == 0) {
+                       for (int i = x - 1; i < x + 1; i++) {
+                           section[i][y + 1] = checkBombs(i, y + 1);
+                           if (i != x)
+                               section[i][y] = checkBombs(i, y);
+                       }
+                   } else if (x != 0 && x != grid.length - 1 && y == 0) {
+                       for (int i = x - 1; i < x + 2; i++) {
+                           section[i][y + 1] = checkBombs(i, y + 1);
+                           if (i != x)
+                               section[i][y] = checkBombs(i, y);
+                       }
+                   } else {
+                       for (int i = x - 1; i < x + 1; i++) {
+                           section[i][y - 1] = checkBombs(i, y - 1);
+                           if (i != x)
+                               section[i][y] = checkBombs(i, y);
+                       }
+                   }
+                   section[x][y] = 9;
+               }
+           }
+       }
+       for (int x = 0; x < section.length; x++) {
+           for (int y = 0; y <section[x].length ; y++) {
+               if (section[x][y] == 0) {
+                   if (x != 0 && x != grid.length - 1 && y != 0 && y != grid.length - 1) {
+                       for (int i = x - 1; i < x + 2; i++) {
+                           section[i][y - 1] = checkBombs(i, y - 1);
+                           section[i][y + 1] = checkBombs(i, y + 1);
+                           if (i != x)
+                               section[i][y] = checkBombs(i, y);
+                       }
+                   } else if (x == 0 && y != 0 && y != grid.length - 1) {
+                       for (int i = x; i < x + 2; i++) {
+                           section[i][y - 1] = checkBombs(i, y - 1);
+                           section[i][y + 1] = checkBombs(i, y + 1);
+                           if (i != x)
+                               section[i][y] = checkBombs(i, y);
+                       }
+                   } else if (x == 0 && y == 0) {
+                       for (int i = x; i < x + 2; i++) {
+                           section[i][y + 1] = checkBombs(i, y + 1);
+                           if (i != x)
+                               section[i][y] = checkBombs(i, y);
+                       }
+                   } else if (x == 0 && y == grid.length - 1) {
+                       for (int i = x; i < x + 2; i++) {
+                           section[i][y - 1] = checkBombs(i, y - 1);
+                           if (i != x)
+                               section[i][y] = checkBombs(i, y);
+                       }
+                   } else if (x == grid.length - 1 && y != 0 && y != grid.length - 1) {
+                       for (int i = x - 1; i < x + 1; i++) {
+                           section[i][y - 1] = checkBombs(i, y - 1);
+                           section[i][y + 1] = checkBombs(i, y + 1);
+                           if (i != x)
+                               section[i][y] = checkBombs(i, y);
+                       }
+                   } else if (x == grid.length - 1 && y == 0) {
+                       for (int i = x - 1; i < x + 1; i++) {
+                           section[i][y + 1] = checkBombs(i, y + 1);
+                           if (i != x)
+                               section[i][y] = checkBombs(i, y);
+                       }
+                   } else if (x != 0 && x != grid.length - 1 && y == 0) {
+                       for (int i = x - 1; i < x + 2; i++) {
+                           section[i][y + 1] = checkBombs(i, y + 1);
+                           if (i != x)
+                               section[i][y] = checkBombs(i, y);
+                       }
+                   } else {
+                       for (int i = x - 1; i < x + 1; i++) {
+                           section[i][y - 1] = checkBombs(i, y - 1);
+                           if (i != x)
+                               section[i][y] = checkBombs(i, y);
+                       }
+                   }
+                   section[x][y] = 9;
+               }
+           }
+       }
        return section;
     }
 }
